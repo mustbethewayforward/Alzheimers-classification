@@ -111,3 +111,13 @@ print(confusion_matrix(y_train,y_train_pred))
 
 print("\nTraining classification report:")
 print(classification_report(y_train, y_train_pred))
+
+#
+#Test set evaluation
+
+y_test_pred = log_reg.predict(X_test_scaled)
+
+print(confusion_matrix(y_test,y_test_pred))
+
+print("\n Test classification report:")
+print(classification_report(y_test, y_test_pred))
