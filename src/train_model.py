@@ -5,6 +5,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder
 #
 
 
@@ -121,3 +124,50 @@ print(confusion_matrix(y_test,y_test_pred))
 
 print("\n Test classification report:")
 print(classification_report(y_test, y_test_pred))
+
+#
+#Pipeline setup
+
+numeric_features =["Age",
+                   "EDUC",
+                   "SES",
+                   "MMSE",
+                   "eTIV",
+                   "nWBV",
+                   "ASF"
+                   ]
+
+catergorical_features =["M/F"]
+
+#Impute missing values then standardise features
+numeric_pipeline = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", StandardScaler())
+    ]
+)
+catergorical_pipeline = Pipeline(
+    steps=[
+        ("encoder", OneHotEncoder(drop="if_binary", handle_unknown="ignore"))
+    ]
+)
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("numeric", numeric_pipeline, numeric_features),
+        ("catergorical", catergorical_pipeline, catergorical_features)
+    ]
+)
+log_reg_pipeline = Pipeline(
+    steps=[
+        ("preprocessor", preprocessor),
+        ("classifier", LogisticRegression(random_state=42))
+    ]
+)
+
+log_reg_pipeline.fit(X_train, y_train)
+
+pipeline_train_pred = log_reg_pipeline.predict(X_train)
+
+print("\nPipeline training classification report:")
+print(classification_report(y_train, pipeline_train_pred))
