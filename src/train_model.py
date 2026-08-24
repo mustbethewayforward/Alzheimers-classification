@@ -8,6 +8,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import StratifiedKFold, cross_validate
 #
 
 
@@ -171,3 +172,37 @@ pipeline_train_pred = log_reg_pipeline.predict(X_train)
 
 print("\nPipeline training classification report:")
 print(classification_report(y_train, pipeline_train_pred))
+
+#
+#Cross Validation
+
+cv = StratifiedKFold(
+    n_splits=5,
+    shuffle=True,
+    random_state=42
+)
+
+#Evaluate metrics
+scoring = { 
+    "accuracy":"accuracy",
+    "recall":"recall",
+    "precision":"precision",
+    "f1":"f1",
+    "roc_auc":"roc_auc"
+}
+
+#Evaluate pipeline
+
+log_reg_cv = cross_validate(
+    log_reg_pipeline,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring=scoring
+)
+
+for metric in scoring:
+    mean_score = log_reg_cv[f"test_{metric}"].mean()
+    print(f"Mean CV {metric}: {mean_score:.3f}")
+
+    
