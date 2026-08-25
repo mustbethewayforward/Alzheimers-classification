@@ -9,7 +9,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import StratifiedKFold, cross_validate
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
 #
 
 
@@ -254,3 +254,28 @@ for metric in scoring:
         f"{scores.mean():.3f} +/- {scores.std():.3f}"
     )
 
+#Gradient Boosting baseline
+
+gb_pipeline = Pipeline(
+    steps=[
+    ("preprocessor", rf_preprocessor),
+    ("classifier", GradientBoostingClassifier(
+        random_state=42))
+   ]
+)
+
+gb_cv = cross_validate(
+    gb_pipeline,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring=scoring
+)
+
+print("\nGradient Boosting:")
+for metric in scoring:
+    scores = gb_cv[f"test_{metric}"]
+    print(
+        f"{metric}: "
+        f"{scores.mean():.3f} +/- {scores.std():.3f}"
+    )
