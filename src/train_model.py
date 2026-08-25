@@ -9,6 +9,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.ensemble import RandomForestClassifier
 #
 
 
@@ -138,7 +139,7 @@ numeric_features =["Age",
                    "ASF"
                    ]
 
-catergorical_features =["M/F"]
+categorical_features =["M/F"]
 
 #Impute missing values then standardise features
 numeric_pipeline = Pipeline(
@@ -147,7 +148,7 @@ numeric_pipeline = Pipeline(
         ("scaler", StandardScaler())
     ]
 )
-catergorical_pipeline = Pipeline(
+categorical_pipeline = Pipeline(
     steps=[
         ("encoder", OneHotEncoder(drop="if_binary", handle_unknown="ignore"))
     ]
@@ -156,7 +157,7 @@ catergorical_pipeline = Pipeline(
 preprocessor = ColumnTransformer(
     transformers=[
         ("numeric", numeric_pipeline, numeric_features),
-        ("catergorical", catergorical_pipeline, catergorical_features)
+        ("categorical", categorical_pipeline, categorical_features)
     ]
 )
 log_reg_pipeline = Pipeline(
@@ -205,4 +206,51 @@ for metric in scoring:
     mean_score = log_reg_cv[f"test_{metric}"].mean()
     print(f"Mean CV {metric}: {mean_score:.3f}")
 
-    
+
+#Random forest baseline
+
+rf_numeric_pipeline = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="median"))
+    ]
+)
+rf_preprocessor = ColumnTransformer(
+    transformers=[
+        ("numeric", rf_numeric_pipeline, numeric_features),
+        ("categorical", categorical_pipeline, categorical_features)
+    ]
+)
+
+rf_pipeline = Pipeline(
+    steps=[
+        ("preprocessor", rf_preprocessor),
+        ("classifier", RandomForestClassifier(
+            random_state=42
+        ))
+    ]
+)
+
+rf_cv = cross_validate(
+    rf_pipeline,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring=scoring
+)
+
+print("\nLogistic Regression:")
+for metric in scoring:
+    scores = log_reg_cv[f"test_{metric}"]
+    print(
+        f"{metric}: "
+        f"{scores.mean():.3f} +/- {scores.std():.3f}"
+    )
+
+print("\nRandom Forest:")
+for metric in scoring:
+    scores = rf_cv[f"test_{metric}"]
+    print(
+        f"{metric}: "
+        f"{scores.mean():.3f} +/- {scores.std():.3f}"
+    )
+
