@@ -308,7 +308,8 @@ rf_grid_search = GridSearchCV(
     param_grid=rf_param_grid,
     scoring="f1",
     cv=cv,
-    n_jobs= 1
+    n_jobs= 1,
+    verbose= 2
 )
 
 rf_grid_search.fit(X_train, y_train)
@@ -319,4 +320,28 @@ print(rf_grid_search.best_params_)
 print(
     "Best Random Forest CV F1:",
     round(rf_grid_search.best_score_, 3)
+)
+
+
+#LR tuning
+
+log_reg_param_grid = {
+    "classifier__C":[0.01, 0.1, 1, 10, 100]
+}
+log_reg_grid_search = GridSearchCV(
+    estimator=log_reg_pipeline,
+    param_grid=log_reg_param_grid,
+    scoring="f1",
+    cv=cv,
+    n_jobs=1
+)
+
+log_reg_grid_search.fit(X_train, y_train)
+
+print("\nBest Logistic Regression parameters")
+print(log_reg_grid_search.best_params_)
+
+print(
+    "Best Logistic Regression CV F1:",
+    round(log_reg_grid_search.best_score_, 3)
 )
