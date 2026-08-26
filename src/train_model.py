@@ -8,7 +8,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold, cross_validate, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
 #
 
@@ -291,5 +291,32 @@ for fold, (lr_score, rf_score) in enumerate(
         f"Fold {fold}: "
         f"Logistic Regression ={lr_score:.3f}, "
         f"Random Forest = {rf_score:.3f}"
-        
+
     )
+
+
+#RF tuning
+rf_param_grid = {
+        "classifier__n_estimators": [100, 300, 500],
+        "classifier__max_depth": [None, 3, 5, 8],
+        "classifier__min_samples_leaf": [1, 2, 4]
+    }
+
+
+rf_grid_search = GridSearchCV(
+    estimator=rf_pipeline,
+    param_grid=rf_param_grid,
+    scoring="f1",
+    cv=cv,
+    n_jobs= 1
+)
+
+rf_grid_search.fit(X_train, y_train)
+
+print("\nBest Random Forest parameters:")
+print(rf_grid_search.best_params_)
+
+print(
+    "Best Random Forest CV F1:",
+    round(rf_grid_search.best_score_, 3)
+)
