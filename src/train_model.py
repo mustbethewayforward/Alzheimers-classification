@@ -345,3 +345,41 @@ print(
     "Best Logistic Regression CV F1:",
     round(log_reg_grid_search.best_score_, 3)
 )
+
+# tuned model comparison
+
+best_rf = rf_grid_search.best_estimator_
+best_log_reg = log_reg_grid_search.best_estimator_
+
+best_rf_cv = cross_validate(
+    best_rf,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring=scoring
+)
+
+best_log_reg_cv = cross_validate(
+    best_log_reg,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring=scoring
+)
+
+print("\nTuned Logistic Regression:")
+for metric in scoring:
+    scores = best_log_reg_cv[f"test_{metric}"]
+    print(
+        f"{metric}: "
+        f"{scores.mean():.3f} +/- {scores.std():.3f}"
+    )
+
+print("\nTuned Random Forest:")
+for metric in scoring:
+    scores = best_rf_cv[f"test_{metric}"]
+    print(
+        f"{metric}: "
+        f"{scores.mean():.3f} +/- {scores.std():.3f}"
+    )
+    
