@@ -279,3 +279,17 @@ for metric in scoring:
         f"{metric}: "
         f"{scores.mean():.3f} +/- {scores.std():.3f}"
     )
+
+#fold by fold comparison
+
+print("\nFold by fold F1 scores:")
+for fold, (lr_score, rf_score) in enumerate(
+    zip(log_reg_cv["test_f1"], rf_cv["test_f1"]),
+    start=1
+):
+    print(
+        f"Fold {fold}: "
+        f"Logistic Regression ={lr_score:.3f}, "
+        f"Random Forest = {rf_score:.3f}"
+        
+    )
