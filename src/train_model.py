@@ -10,6 +10,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import StratifiedKFold, cross_validate, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
+from sklearn.inspection import permutation_importance
 #
 
 
@@ -402,3 +403,29 @@ print(
     "\nFinal Random Forest test ROC-AUC:",
     round(final_test_roc_auc, 3)
 )
+
+#Feature importance
+
+perm_importance = permutation_importance(
+    best_rf,
+    X_test,
+    y_test,
+    scoring="f1",
+    n_repeats=20,
+    random_state=42,
+    n_jobs=1
+)
+
+importance_df = pd.DataFrame({
+    "feature": X_test.columns,
+    "importance_mean": perm_importance.importances_mean,
+    "importance_std": perm_importance.importances_std
+})
+
+importance_df = importance_df.sort_values(
+    "importance_mean",
+    ascending=False
+)
+
+print("\nPermutation importance: ")
+print(importance_df)
