@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
@@ -382,4 +382,23 @@ for metric in scoring:
         f"{metric}: "
         f"{scores.mean():.3f} +/- {scores.std():.3f}"
     )
-    
+
+
+#Final test Eval
+
+final_test_pred = best_rf.predict(X_test)
+
+print("\nFinal Random Forest test confusion matrix:")
+print(confusion_matrix(y_test, final_test_pred))
+
+print("\nFinal Random Forest test classification report:")
+print(classification_report(y_test, final_test_pred))
+
+final_test_prob = best_rf.predict_proba(X_test)[:, 1]
+
+final_test_roc_auc = roc_auc_score(y_test, final_test_prob)
+
+print(
+    "\nFinal Random Forest test ROC-AUC:",
+    round(final_test_roc_auc, 3)
+)
