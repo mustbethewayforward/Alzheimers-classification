@@ -310,7 +310,6 @@ rf_grid_search = GridSearchCV(
     scoring="f1",
     cv=cv,
     n_jobs= 1,
-    verbose= 2
 )
 
 rf_grid_search.fit(X_train, y_train)
