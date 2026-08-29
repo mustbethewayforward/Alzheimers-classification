@@ -25,7 +25,21 @@ The 14 `Converted` subjects were excluded from the primary binary classification
 
 This leaves **136 subjects: 72 Nondemented and 64 Demented**. Nondemented is encoded as `0` and Demented as `1`.
 
-The raw OASIS-2 dataset is not included in this repository. It should be obtained separately and stored locally as `data/oasis_longitudinal.csv`. See `data/README.md` for the dataset setup instructions.
+The raw OASIS-2 dataset is not included in this repository. It should be obtained separately and stored locally as `data/oasis_longitudinal.csv`. 
+
+## Data Access
+
+The raw OASIS-2 dataset is not included in this repository, in accordance
+with the OASIS data use agreement, which restricts redistribution of the
+raw data. To reproduce this analysis:
+
+1. Register and download the OASIS-2 (longitudinal) dataset from
+   <https://sites.wustl.edu/oasisbrains/>
+2. Place the CSV at `data/oasis_longitudinal.csv`.
+3. Expected columns: `Subject ID, MRI ID, Group, Visit, MR Delay, M/F,
+   Hand, Age, EDUC, SES, MMSE, CDR, eTIV, nWBV, ASF`
+
+The `data/` directory is excluded from version control via `.gitignore`.
 
 ## Features and Target
 
