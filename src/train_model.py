@@ -3,13 +3,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
+from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score, make_scorer, precision_score
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import StratifiedKFold, cross_validate, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
 from sklearn.inspection import permutation_importance
+from sklearn.dummy import DummyClassifier
 
 
 
@@ -67,7 +68,7 @@ numeric_features =["Age",
 
 categorical_features =["M/F"]
 
-#Impute missing values then standardise features
+
 numeric_pipeline = Pipeline(
     steps=[
         ("imputer", SimpleImputer(strategy="median")),
@@ -106,10 +107,23 @@ cv = StratifiedKFold(
 scoring = { 
     "accuracy":"accuracy",
     "recall":"recall",
-    "precision":"precision",
+    "precision":make_scorer(precision_score, zero_division=0),
     "f1":"f1",
     "roc_auc":"roc_auc"
 }
+
+dummy_cv = cross_validate(
+    DummyClassifier(strategy="most_frequent"),
+    X_train,
+    y_train,
+    cv=cv,
+    scoring=scoring
+)
+
+print("Dummy Classifier")
+for metric in scoring:
+    scores = dummy_cv[f"test_{metric}"]
+    print(f"{metric}: {scores.mean():.3f} +/- {scores.std():.3f}")
 
 #Evaluate pipeline
 
