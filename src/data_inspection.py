@@ -54,9 +54,7 @@ print(
     ][ ["Subject ID", "Age", "MMSE", "CDR"]]
 )
 
-#
 #prepare modelling data
-#
 
 model_df = baseline_visits[
     baseline_visits["Group"].isin(["Nondemented", "Demented"])
@@ -66,9 +64,7 @@ print(model_df.shape)
 print(model_df["Group"].value_counts())
 print(model_df["Subject ID"].nunique())
 
-#
 # inspect features
-#
 
 model_df.info()
 print(model_df.isna().sum())
@@ -78,6 +74,26 @@ for column in ["Visit", "MR Delay", "M/F", "Hand"]:
     print(f"\n{column}")
     print(model_df[column].value_counts())
 
-    #
-   
-   
+
+ses_missing_by_group = (
+    model_df.groupby("Group")["SES"]
+    .agg(
+        n_subjects="size",
+        n_missing=lambda s: s.isna().sum(),
+        pct_missing=lambda s: s.isna().mean() * 100
+    )
+)
+
+print("\nSES missingness by Group:")
+print(ses_missing_by_group)  
+
+
+print("\neTIV/ASF correlation:")
+print(model_df[["eTIV", "ASF"]].corr())
+
+
+baseline_df = df[df["Visit"]==1].copy()
+converted_baseline = baseline_df[baseline_df["Group"] == "Converted"]
+
+print("\nBaseline CDR among Converted subjects:")
+print(converted_baseline["CDR"].value_counts().sort_index())
